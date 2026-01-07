@@ -64,12 +64,12 @@ def main():
                         cv2.putText(frame, f"Dist: {int(distance)}", (50, 50), 
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-                        # if distance <= 30 and distance>=10:
-                        #     cam.release()
-                        #     cv2.destroyAllWindows()
-                        if distance < 30:
-                            cv2.putText(frame, "Halland!", (200, 200), 
-                            cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 3)
+                        if distance <= 30 and distance>=10:
+                            cam.release()
+                            cv2.destroyAllWindows()
+                        # if distance < 30:
+                        #     cv2.putText(frame, "Halland!", (200, 200), 
+                        #     cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 3)
 
             cv2.imshow('window',frame)
             # cv2.imshow('RGB',frameRGB)
