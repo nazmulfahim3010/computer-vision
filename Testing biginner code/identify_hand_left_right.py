@@ -48,9 +48,6 @@ def main():
                       
                     hand_label = hand[0].category_name
                     print(hand_label)
-
-                    if hand_label == 'Left':
-                        ...
                     points = []
                     for lm in hand_landmarks:
                          h, w, _ = frame.shape
@@ -71,7 +68,7 @@ def main():
                          cv2.putText(frame,f"This is Right Hand",(tag[0],tag[1]-20),
                                      cv2.FONT_HERSHEY_SIMPLEX,0.7,(255,0,0),2)
 
-                      
+                    
 
 
             cv2.imshow('window',frame)
@@ -84,9 +81,7 @@ def main():
        
         cam.release()
 
-    
-def left_hand_functions():
-     pass
+
 
 if __name__ == '__main__':
     main()
