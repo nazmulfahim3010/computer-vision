@@ -62,6 +62,17 @@ class track_custom_nazz:
             self.is_dragging = False
 
         return self.is_dragging,box_center
+    def distance(self,p_A,p_B):
+        if not p_A or p_B:
+            return
+        dist = ((p_A[0]-p_B[0])**2 + (p_A[1]-p_B[1])**2)**0.5
+        return dist
+
         ...
-    
-         
+    def shut_down(self, p_A, p_B):
+        if p_A is None or p_B is None:
+            return False
+        dist = ((p_A[0]-p_B[0])**2 + (p_A[1]-p_B[1])**2)**0.5
+        if dist < 15:
+            return True
+        return False

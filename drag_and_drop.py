@@ -50,7 +50,7 @@ def main():
             box_x1,box_y1 = w-250 , 50
             box_x2,box_y2 = w-50 ,250
 
-            
+            l_p0,r_p8 = None,None
             if result.hand_landmarks:
                 for hand_id, (hand_landmarks, hand) in enumerate(zip(result.hand_landmarks, result.handedness)):
                     
@@ -62,21 +62,32 @@ def main():
                     points = []
                     for lm in hand_landmarks:
                         points.append((int(lm.x * w), int(lm.y * h)))
-                    
-                    pipe.art_hand(points,None)
+
+                    if hand_label == 'Left': l_p0 = points[0]
+                    if hand_label == 'Right': r_p8 = points[8]
+                        
+                    pipe.art_hand(points)
                     pipe.paint_dot(points)
 
-                    
-                    if hand_label == 'Right':
-                        
+                 
+                    if hand_label == 'Right': 
                         p4, p8 = points[4],points[8]
                         is_dragging,box_center = pipe.drag_and_drop(box_center,p4,p8)
-                        
+                
+
+
             top_left = (box_center[0] - box_size, box_center[1] - box_size)
             bottom_right = (box_center[0] + box_size, box_center[1] + box_size)
+
             
             box_color = (255, 0, 255) if is_dragging else (255, 255, 255)
-            cv2.rectangle(frame, top_left, bottom_right, box_color, cv2.FILLED if is_dragging else 3)                    
+            cv2.rectangle(frame, top_left, bottom_right, box_color, cv2.FILLED if is_dragging else 3)     
+            if l_p0 and r_p8:
+                checker = track_custom_nazz(frame)
+                if checker.shut_down(l_p0, r_p8):
+                    print("Shutdown gesture detected!")
+                    break 
+                   
 
             cv2.imshow('window',frame)
             # cv2.imshow('RGB',frameRGB)
@@ -87,57 +98,6 @@ def main():
 
         cam.release()
         cv2.destroyAllWindows()
-
-
-# def art_hand(HAND_CONNECTIONS,frame,hand_label,points):
-#     for connection in HAND_CONNECTIONS:
-#         A=points[connection[0]]
-#         B=points[connection[1]]
-
-#         cv2.line(frame,A,B,(0,255,0),2)
-
-#         # if hand_label =='Left':
-#         #     tag=points[19]
-#         #     cv2.putText(frame,f"This is Right Hand",(tag[0],tag[1]-20),
-#         #                 cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
-#         # else:
-#         #         tag = points[4]
-#         #         cv2.putText(frame,f"This is Left Hand",(tag[0],tag[1]-20),
-#         #                     cv2.FONT_HERSHEY_SIMPLEX,0.7,(255,0,0),2) 
-
-# def paint_dot(points,hand_label,frame):
-#     if hand_label == 'Left':
-#         for cir in points:
-#             cv2.circle(frame,cir,5,(255,0,0),-1)
-    # else:
-    #     for cir in points:
-    #         cv2.circle(frame,cir,5,(255,0,255),-1)
-
-# def drag_and_drop(frame,is_dragging,box_center,box_size,p4,p8):
-#     dist = ((p4[0] - p8[0])**2 + (p4[1] - p8[1])**2)**0.5
-#     # Midpoint between fingers
-#     mid_x, mid_y = (p4[0] + p8[0]) // 2, (p4[1] + p8[1]) // 2
-
-#     if dist < 40: 
-#         if not is_dragging:
-#             # Start drag only if hand is inside the box
-#             if abs(mid_x - box_center[0]) < box_size and abs(mid_y - box_center[1]) < box_size:
-#                 is_dragging = True
-        
-#         if is_dragging:
-#             # UPDATE BOTH X AND Y (This allows "anywhere" movement)
-#             box_center[0] = mid_x
-#             box_center[1] = mid_y
-#     else:
-#         is_dragging = False
-
-#     return is_dragging,box_center
-
-    # 4. Draw the Box (Outside hand loop for stability)
-    # Ensure the corners use both [0] and [1]
-   
-
-
 
 
 if __name__ == '__main__':
