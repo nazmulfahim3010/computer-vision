@@ -42,7 +42,7 @@ class track_custom_nazz:
             for cir in points:
                 cv2.circle(self.frame,cir,5,(255,0,255),-1)
 
-    def drag_and_drop(self,box_center,touch_p_A,touch_P_B):
+    def drag_and_drop(self,box_center,touch_p_A,touch_P_B,last_mid,velocity):
         
         dist = ((touch_p_A[0] - touch_P_B[0])**2 + (touch_p_A[1] - touch_P_B[1])**2)**0.5
         # Midpoint between fingers
@@ -55,13 +55,20 @@ class track_custom_nazz:
                     self.is_dragging = True
             
             if self.is_dragging:
+                velocity[0]=mid_x-last_mid[0]
+                velocity[1]=mid_y-last_mid[1]
                 # UPDATE BOTH X AND Y (This allows "anywhere" movement)
-                box_center[0] = mid_x
-                box_center[1] = mid_y
+                box_center[0],box_center[1] = mid_x,mid_y
+
         else:
             self.is_dragging = False
 
-        return self.is_dragging,box_center
+        last_mid=[mid_x,mid_y]
+
+        return self.is_dragging,box_center,last_mid,velocity
+    
+
+
     def distance(self,p_A,p_B):
         if not p_A or p_B:
             return
@@ -76,3 +83,29 @@ class track_custom_nazz:
         if dist < 15:
             return True
         return False
+    
+    def apply_physics(self,box_center,velocity,friction,h,w):
+        box_center[0] += int(velocity[0])
+        box_center[1] += int(velocity[1])
+
+        velocity[0] *= friction
+        velocity[1] *= friction
+#horizontal bounc logic
+        # if box_center[0] - self.box_size < 0: # Hit Left
+        #     box_center[0] = self.box_size
+        #     velocity[0] *= -0.7 # Bounce back
+
+        # elif box_center[0] + self.box_size > w: # Hit Right
+        #     box_center[0] = w - self.box_size
+        #     velocity[0] *= -0.7
+
+        # # Top and Bottom Walls
+        # if box_center[1] - self.box_size < 0: # Hit Top
+        #     box_center[1] = self.box_size
+        #     velocity[1] *= -0.7
+
+        # elif box_center[1] + self.box_size > h: # Hit Bottom
+        #     box_center[1] = h - self.box_size
+        #     velocity[1] *= -0.7
+        return box_center,velocity
+        ...
