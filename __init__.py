@@ -37,16 +37,16 @@ class track_custom_nazz:
     def paint_dot(self,points,ALL=None):
         if self.hand_label == 'Left':
             for cir in points:
-                cv2.circle(self.frame,cir,5,(255,0,0),-1)
+                cv2.circle(self.frame,cir,5,(255,244,0),-1)
         else:
             for cir in points:
                 cv2.circle(self.frame,cir,5,(255,0,255),-1)
 
-    def drag_and_drop(self,box_center,touch_p_A,touch_P_B,last_mid,velocity):
-        
-        dist = ((touch_p_A[0] - touch_P_B[0])**2 + (touch_p_A[1] - touch_P_B[1])**2)**0.5
+    def drag_and_drop(self,box_center,touch_P_A,touch_P_B,last_mid,velocity):
+        circel = [touch_P_A,touch_P_B]
+        dist = ((touch_P_A[0] - touch_P_B[0])**2 + (touch_P_A[1] - touch_P_B[1])**2)**0.5
         # Midpoint between fingers
-        mid_x, mid_y = (touch_p_A[0] + touch_P_B[0]) // 2, (touch_p_A[1] + touch_P_B[1]) // 2
+        mid_x, mid_y = (touch_P_A[0] + touch_P_B[0]) // 2, (touch_P_A[1] + touch_P_B[1]) // 2
 
         if dist < 40: 
             if not self.is_dragging:
@@ -64,6 +64,9 @@ class track_custom_nazz:
             self.is_dragging = False
 
         last_mid=[mid_x,mid_y]
+
+        for cir in circel:
+            cv2.circle(self.frame,cir,5,(145,23,75),3)
 
         return self.is_dragging,box_center,last_mid,velocity
     

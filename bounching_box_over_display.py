@@ -23,7 +23,7 @@ def main():
 
         cam = cv2.VideoCapture(0)
         box_center=[300,300]
-        box_size=50
+        box_size=30
         is_dragging =False
         timestamp_ms = 0
 
@@ -78,8 +78,8 @@ def main():
                     pipe.paint_dot(points)
 
                  
-                    if hand_label == 'Right': 
-                        p4, p8 = points[4],points[8]
+                    if hand_label == 'Left': 
+                        p4, p8 = points[12],points[8]
                         is_dragging,box_center,last_mid,velocity = pipe.drag_and_drop(
                             box_center,
                             p4,p8,
@@ -107,25 +107,32 @@ def main():
                 if checker.shut_down(l_p0, r_p8):
                     print("Shutdown gesture detected!")
                     break 
+            hit_border = False
             
-            if box_center[0] - box_size < 0: # Hit Left
+            # --- Left and Right Walls ---
+            if box_center[0] - box_size <= 0: # Hit Left
                 box_center[0] = box_size
-                velocity[0] *= -0.7 # Bounce back
+                velocity[0] *= -0.7 
+                hit_border = True
+            elif box_center[0] + box_size >= w: # Hit Right
+                box_center[0] = w - box_size  # Fixed: Snap to right
+                velocity[0] *= -0.7 
+                hit_border = True
 
-            elif box_center[0] + box_size > w: # Hit Right
-                box_center[0] = w - box_size
-                velocity[0] *= -0.7
-
-            # Top and Bottom Walls
-            if box_center[1] - box_size < 0: # Hit Top
+            # --- Top and Bottom Walls ---
+            if box_center[1] - box_size <= 0: # Hit Top
                 box_center[1] = box_size
                 velocity[1] *= -0.7
-
-            elif box_center[1] + box_size > h: # Hit Bottom
-                box_center[1] = h - box_size
+                hit_border = True
+            elif box_center[1] + box_size >= h: # Hit Bottom
+                box_center[1] = h - box_size  # Fixed: Snap to bottom
                 velocity[1] *= -0.7
+                hit_border = True
+
             # Draw a border at the very edge of the camera feed
-            cv2.rectangle(frame, (0, 0), (w, h), (25, 255, 255), 2)
+            border_color = (0, 0, 255) if hit_border else (0, 255, 255)
+            border_thickness = 10 if hit_border else 2
+            cv2.rectangle(frame, (0, 0), (w, h), border_color, border_thickness)
 
             cv2.imshow('window',frame)
             # cv2.imshow('RGB',frameRGB)
