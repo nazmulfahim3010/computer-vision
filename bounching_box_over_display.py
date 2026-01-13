@@ -2,7 +2,7 @@ import cv2
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
-from __init__ import track_custom_nazz
+from pack import track_custom_nazz
 
 def main():
         MODEL_PATH='models/hand_landmarker.task'
@@ -22,6 +22,7 @@ def main():
         landmarker = HandLandmarker.create_from_options(options)
 
         cam = cv2.VideoCapture(0)
+        
         box_center=[300,300]
         box_size=30
         is_dragging =False
